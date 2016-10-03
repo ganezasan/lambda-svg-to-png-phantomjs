@@ -1,0 +1,37 @@
+service: lambda-svg-to-png-phantomjs
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev
+  region: ap-northeast-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObjectAcl"
+        - "s3:PutObject"
+      Resource: "arn:aws:s3:::lambda-svg-to-png-phantomjs/*"
+
+# you can add packaging information here
+package:
+ include:
+   - env.js
+   - phantomjs
+   - package.json
+
+functions:
+  lambdaSvgToPngPhantomjs:
+    handler: handler.convert
+    memorySize: 256
+    timeout: 60
+    events:
+      - http:
+          path: convert
+          method: post
+          cors: true
+
+resources:
+ Resources:
+   NewResource:
+     Type: AWS::S3::Bucket
+     Properties:
+       BucketName: lambda-svg-to-png-phantomjs
